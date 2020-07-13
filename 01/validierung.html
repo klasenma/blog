@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientseitige Formular-Validierung</title>
+
+    <!-- Vue / https://vuejs.org -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+    <!-- UIKit / https://getuikit.com -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.5.4/dist/css/uikit.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.5.4/dist/js/uikit.min.js"></script>
+
+    <!-- Vuelidate / https://vuelidate.js.org -->
+    <script src="src/vuelidate.min.js"></script>
+    <script src="src/validators.min.js"></script>
+</head>
+<body>
+    <div id="validation" class="uk-width-1-3@m uk-padding uk-align-center">
+        <div class="uk-card uk-card-body" uk-grid>
+            <form class="uk-padding-remove" @submit.prevent="submit"> 
+                <legend class="uk-legend uk-text-center"> REGISTRIERUNG </legend>
+
+                <div class="uk-margin uk-grid-small" uk-grid>
+                    <div class="uk-width-1-2">
+                        <!-- Inputfeld mit Vue verbinden -->
+                        <input 
+                            class="uk-input" placeholder="Vorname" 
+                            v-model.trim="$v.vorname.$model" 
+                            :class="{ 'uk-form-danger': $v.vorname.$error }">
+                        
+                        <!-- Ausgabe entsprechender Fehlermeldungen -->
+                        <div class="uk-text-danger" v-if="!$v.vorname.required && $v.vorname.$dirty">
+                            Bitte einen Vornamen angeben.
+                        </div>
+                        <div class="uk-text-danger" v-if="!$v.vorname.minLength">
+                            Bitte min. {{$v.vorname.$params.minLength.min}} Zeichen verwenden.
+                        </div>
+                        <div class="uk-text-danger" v-if="!$v.vorname.maxLength">
+                            Bitte max. {{$v.vorname.$params.maxLength.max}} Zeichen verwenden.
+                        </div>
+                    </div>
+                    
+                    <div class="uk-width-1-2">
+                        <input 
+                            class="uk-input" placeholder="Nachname" 
+                            v-model.trim="$v.nachname.$model"
+                            :class="{ 'uk-form-danger': $v.nachname.$error }">
+                            
+                        <div class="uk-text-danger" v-if="!$v.nachname.required && $v.nachname.$dirty">
+                            Bitte einen Nachnamen angeben.
+                        </div>
+                        <div class="uk-text-danger" v-if="!$v.nachname.minLength">
+                            Bitte min. {{$v.nachname.$params.minLength.min}} Zeichen verwenden.
+                        </div>
+                        <div class="uk-text-danger" v-if="!$v.nachname.maxLength">
+                            Bitte max. {{$v.nachname.$params.maxLength.max}} Zeichen verwenden.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="uk-margin">
+                    <input 
+                        class="uk-input" placeholder="E-Mail"
+                        v-model.trim.lazy="$v.email.$model"
+                        :class="{ 'uk-form-danger': $v.email.$error }">
+
+                    <div class="uk-text-danger" v-if="(!$v.email.required && $v.email.$dirty) || $v.email.$error">
+                        Bitte gib eine gültige E-Mail an.
+                    </div>
+                </div>
+
+                <div class="uk-margin">
+                    <input 
+                        class="uk-input" 
+                        placeholder="Passwort"
+                        v-model.trim="$v.passwort.$model"
+                        :class="{ 'uk-form-danger': $v.passwort.$error }">
+
+                    <div class="uk-text-danger" v-if="!$v.passwort.required && $v.passwort.$dirty">
+                        Bitte gib ein Passwort an.
+                    </div>
+                    <div class="uk-text-danger" v-if="!$v.passwort.minLength">
+                        Bitte min. {{$v.passwort.$params.minLength.min}} Zeichen verwenden.
+                    </div>
+                </div>
+
+                <div class="uk-margin">
+                    <input 
+                        class="uk-input" 
+                        placeholder="Passwort bestätigen"
+                        v-model.trim="$v.passwort2.$model"
+                        :class="{ 'uk-form-danger': $v.passwort2.$error }">
+
+                    <div class="uk-text-danger" v-if="!$v.passwort2.sameAsPassword && $v.passwort2.$dirty">
+                        Das Passwort stimmt nicht überein.
+                    </div>
+                </div>
+
+                <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+                    <label>
+                        <input 
+                            class="uk-checkbox" type="checkbox" 
+                            v-model="$v.datenschutz.$model"
+                            @change="$v.datenschutz.$touch()"> 
+                            Ich akzeptiere die <a href="https://www.google.de" target="_blank">Datenschutzbestimmungen</a>.
+
+                        <div class="uk-text-danger" v-if="$v.datenschutz.$error">
+                            Bitte akzeptiere die Datenschutzbestimmungen.
+                        </div>
+                    </label>
+                </div>
+
+                <div class="uk-margin">
+                    <button class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">
+                        jetzt registrieren
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Vuelidate als globales Plugin zur Verfügung stellen --> https://vuejs.org/v2/guide/plugins.html#Using-a-Plugin
+        Vue.use(window.vuelidate.default);
+
+        // Validatoren abspeichern / vollständige Liste unter https://vuelidate.js.org/#validators
+        var required = validators.required;
+        var minLength = validators.minLength;
+        var maxLength = validators.maxLength;
+        var email = validators.email;
+        var sameAs = validators.sameAs;
+
+        // Vue-Instanz erstellen
+        new Vue({
+            // Verweis auf das DIV-Element, welches das Registrierungsformular enthält
+            el: "#validation", 
+
+            // Models, die zur Validierung des Formulars dienen 
+            data: {
+                vorname: '',
+                nachname: '',
+                email: '',
+                passwort: '',
+                passwort2: '',
+                datenschutz: false
+            },
+
+            // Validations-Objekt wird durch Vuelidate zur Verfügung gestellt
+            validations: {
+                vorname: {
+                    // Übergabe der gewünschten Validatoren
+                    required,
+                    minLength: minLength(3),
+                    maxLength: maxLength(30)
+                },
+                nachname: {
+                    required,
+                    minLength: minLength(3),
+                    maxLength: maxLength(30)
+                },
+                email: {
+                    required,
+                    email
+                },
+                passwort: {
+                    required,
+                    minLength: minLength(6)
+                },
+                passwort2: {
+                    sameAsPassword: sameAs('passwort')
+                },
+                // Eigender Validator, der überprüft ob die Checkbox akzeptiert wurde --> https://vuelidate.js.org/#custom-validators
+                datenschutz: {
+                    checked(val) {
+                        return val;
+                    }
+                }
+            },
+
+            methods: {
+                // Die Submit-Funktion überprüft, ob alle Angaben valide sind
+                submit() {
+                    console.log('Formular abgeschickt...')
+                    this.$v.$touch();
+                    if (this.$v.$invalid) {
+                        console.log('Fehlgeschlagen :(');
+                    } else {
+                        console.log('Erfolgreich :)');
+                    }
+                }
+            }
+        })
+    </script>
+    
+    <style>
+        .uk-card {
+            background-color: #EBEAEA ;
+        }
+    </style>
+</body>
+</html>
