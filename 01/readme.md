@@ -1,1 +1,5 @@
-# 
+# VUE.JS + VUELIDATE: FORMULAR-VALIDIERUNG DER EINFACHEN ART
+
+Wenn es zu einer Interaktion zwischen einer Website und einem Benutzer kommt, so handelt es sich oftmals um eine Form der Datenübermittlung. Ob Anmeldung, Suche oder das Ausfüllen eines Kontaktformulars: Formulare sind omnipräsent im World Wide Web, auch wenn sie nicht immer bewusst wahrgenommen werden. Gerade weil Formulare so essenziell für die Interaktion mit dem Benutzer sind, sollte eine sorgfältige Umsetzung nicht zu kurz kommen. Dazu gehört, dass die eingegebenen Daten nicht nur serverseitig (also bei der Verarbeitung) kontrolliert werden. Vielmehr sollte vorab bereits bei der Eingabe im Browser Feedback an den Nutzer ausgespielt werden. Dies erhöht die Benutzerfreundlichkeit und verhindert eventuelle Abbrüche durch lange Ladezeiten oder Frust. Aber ganz wichtig: Eine clientseitige sollte niemals die serverseitige Validierung ersetzen.
+
+[Zum Artikel](https://www.euresa.de/blog/vue-js-vuelidate-formular-validierung-der-einfachen-art)
